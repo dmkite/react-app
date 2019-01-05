@@ -37,23 +37,40 @@ class App extends Component {
       }
   }
 
-  changeReadStatus = async(readOrUnread) => {
-    const selectedMessages = this.state.messages.reduce((acc, msg) => {
-      if(msg.selected) acc.push(msg.id)
+  // changeReadStatus = async(readOrUnread) => {
+  //   const selectedMessages = this.state.messages.reduce((acc, msg) => {
+  //     if(msg.selected) acc.push(msg.id)
+  //     return acc
+  //   }, [])
+  //   try{
+  //     const response = await axios.patch(`${process.env.REACT_APP_BASE_URL}/api/messages`, {
+  //       messageIds: selectedMessages,
+  //       command: 'read',
+  //       read: readOrUnread
+  //     })    
+  //     this.setState({
+  //       messages: response.data
+  //     })
+  //   } catch(err){
+  //     this.setState({
+  //       errorState:true
+  //     })
+  //   }
+  // }
+
+  changeMessages = async (body) => {
+    body.messageIds = this.state.messages.reduce((acc, msg) => {
+      if (msg.selected) acc.push(msg.id)
       return acc
     }, [])
-    try{
-      const response = await axios.patch(`${process.env.REACT_APP_BASE_URL}/api/messages`, {
-        messageIds: selectedMessages,
-        command: 'read',
-        read: readOrUnread
-      })    
+    try {
+      const response = await axios.patch(`${process.env.REACT_APP_BASE_URL}/api/messages`, body)
       this.setState({
         messages: response.data
       })
-    } catch(err){
+    } catch (err) {
       this.setState({
-        errorState:true
+        errorState: true
       })
     }
   }
@@ -85,7 +102,7 @@ class App extends Component {
             if (!message.read) acc++
             return acc
           }, 0)} 
-          changeReadStatus={this.changeReadStatus}
+          changeMessages={this.changeMessages}
         />
         {this.state.errorState 
           ? <div className="errorState">Something messed up :(</div> 
