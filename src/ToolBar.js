@@ -22,11 +22,11 @@ export default class ToolBar extends Component{
                             unread messages
                         </p>
 
-                        <a className="btn btn-danger">
+                        <a className="btn btn-danger" >
                             <i className="fa fa-plus"></i>
                         </a>
 
-                        <button className="btn btn-default">
+                    <button className="btn btn-default" onClick={this.props.selectAll}>
                             <i className="fa fa-minus-square-o"></i>
                         </button>
 
@@ -48,8 +48,8 @@ export default class ToolBar extends Component{
                             <option value="gschool">gschool</option>
                         </select>
 
-                        <button className="btn btn-default">
-                        <i className="fa fa-trash-o"></i>
+                    <button className="btn btn-default" onClick={() => this.props.changeMessages({ command: 'delete', read: true })}>
+                        <i className="fa fa-trash-o" ></i>
                         </button>
                     </div>
                 </div>
