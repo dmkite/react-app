@@ -13,6 +13,7 @@ class App extends Component {
         "id": 0,
         "subject": "Empty",
         "read": false,
+        "selected":false,
         "starred": true,
         "labels": []
       }]
@@ -36,27 +37,6 @@ class App extends Component {
         })
       }
   }
-
-  // changeReadStatus = async(readOrUnread) => {
-  //   const selectedMessages = this.state.messages.reduce((acc, msg) => {
-  //     if(msg.selected) acc.push(msg.id)
-  //     return acc
-  //   }, [])
-  //   try{
-  //     const response = await axios.patch(`${process.env.REACT_APP_BASE_URL}/api/messages`, {
-  //       messageIds: selectedMessages,
-  //       command: 'read',
-  //       read: readOrUnread
-  //     })    
-  //     this.setState({
-  //       messages: response.data
-  //     })
-  //   } catch(err){
-  //     this.setState({
-  //       errorState:true
-  //     })
-  //   }
-  // }
 
   changeMessages = async (body) => {
     body.messageIds = this.state.messages.reduce((acc, msg) => {
@@ -94,6 +74,40 @@ class App extends Component {
     }
   }
 
+  selectAll = () => {
+    const newMessages = [...this.state.messages]
+    const numSelected = newMessages.reduce((acc, msg) => {
+      if(msg.selected) acc++
+      return acc
+    }, 0)
+    if(numSelected === newMessages.length){
+      newMessages.forEach(msg => msg.selected = false)
+    }
+    else{
+      newMessages.forEach(msg => msg.selected = true )
+    }
+    this.setState({
+      messages: newMessages
+    })
+  }
+
+  starMessage = async (id) => {
+    try {
+      const body = {
+        messageIds: [id],
+        command: 'star'
+      }
+      const response = await axios.patch(`${process.env.REACT_APP_BASE_URL}/api/messages`, body)
+      this.setState({
+        messages: response.data
+      })
+    } catch (err) {
+      this.setState({
+        errorState: true
+      })
+    }
+ }
+
   render() {
     return (
       <div className="wrapper">
@@ -103,10 +117,11 @@ class App extends Component {
             return acc
           }, 0)} 
           changeMessages={this.changeMessages}
+          selectAll={this.selectAll}
         />
         {this.state.errorState 
           ? <div className="errorState">Something messed up :(</div> 
-          : <Messages messages={this.state.messages} handleChange={this.handleChange}/>}
+          : <Messages messages={this.state.messages} handleChange={this.handleChange} starMessage={this.starMessage}/>}
       </div>
     );
   }

@@ -14,7 +14,7 @@ export default class Messages extends Component{
     render(){
         return (
             <div className="container-fluid">
-                {this.props.messages.map(msg => <Message key={msg.id} {...msg} handleChange={() => this.props.handleChange(msg.id)} />)}
+                {this.props.messages.map(msg => <Message key={msg.id} {...msg} handleChange={() => this.props.handleChange(msg.id)} starMessage={()=> this.props.starMessage(msg.id)}/>)}
             </div>
         )
     }
