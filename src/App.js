@@ -39,10 +39,12 @@ class App extends Component {
   }
 
   changeMessages = async (body) => {
-    body.messageIds = this.state.messages.reduce((acc, msg) => {
-      if (msg.selected) acc.push(msg.id)
-      return acc
-    }, [])
+    if(!body.messageIds){
+      body.messageIds = this.state.messages.reduce((acc, msg) => {
+        if (msg.selected) acc.push(msg.id)
+        return acc
+      }, [])
+    }
     try {
       const response = await axios.patch(`${process.env.REACT_APP_BASE_URL}/api/messages`, body)
       this.setState({
@@ -108,6 +110,19 @@ class App extends Component {
     }
  }
 
+ addMessage = async(body) => {
+   if(body.body === '' || body.subject === '') return false
+   try{
+     const response = await axios.post(`${process.env.REACT_APP_BASE_URL}/api/messages`, body)
+     const newMessages = [...this.state.messages, response.data]
+     this.setState({messages:newMessages})
+   } catch(err){
+     this.setState({
+       errorState:true
+     })
+   }
+ }
+
   render() {
     return (
       <div className="wrapper">
@@ -118,10 +133,13 @@ class App extends Component {
           }, 0)} 
           changeMessages={this.changeMessages}
           selectAll={this.selectAll}
+          numMessages={this.state.messages.length}
+          selected={this.state.messages.filter(item => item.selected === true)}
+          addMessage={this.addMessage}
         />
         {this.state.errorState 
           ? <div className="errorState">Something messed up :(</div> 
-          : <Messages messages={this.state.messages} handleChange={this.handleChange} starMessage={this.starMessage}/>}
+          : <Messages messages={this.state.messages} handleChange={this.handleChange} starMessage={this.starMessage} changeMessages={this.changeMessages}/>}
       </div>
     );
   }
